@@ -61,7 +61,7 @@ const Map = ({ classes }) => {
   }
 
   const hightlightNewPin = pin => {
-    return differenceInMinutes(Date.now(), new Date(pin.createdAt)) <= 30
+    return differenceInMinutes(Date.now(), Number(pin.createdAt)) <= 30
       ? 'green'
       : 'darkblue'
   }

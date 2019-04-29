@@ -1,28 +1,28 @@
-import React from "react";
-import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
-import purple from "@material-ui/core/colors/purple";
-import green from "@material-ui/core/colors/green";
-import CssBaseline from "@material-ui/core/CssBaseline";
+import React from 'react'
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
+import indigo from '@material-ui/core/colors/indigo'
+import cyan from '@material-ui/core/colors/cyan'
+import CssBaseline from '@material-ui/core/CssBaseline'
 
 // A theme with custom primary and secondary color.
 // It's optional.
 const theme = createMuiTheme({
   palette: {
     primary: {
-      light: purple[300],
-      main: purple[500],
-      dark: purple[700]
+      light: indigo[300],
+      main: indigo[500],
+      dark: indigo[700],
     },
     secondary: {
-      light: green[300],
-      main: green[500],
-      dark: green[700]
-    }
+      light: cyan[300],
+      main: cyan[500],
+      dark: cyan[700],
+    },
   },
   typography: {
-    useNextVariants: true
-  }
-});
+    useNextVariants: true,
+  },
+})
 
 function withRoot(Component) {
   function WithRoot(props) {
@@ -35,10 +35,10 @@ function withRoot(Component) {
         <CssBaseline />
         <Component {...props} />
       </MuiThemeProvider>
-    );
+    )
   }
 
-  return WithRoot;
+  return WithRoot
 }
 
-export default withRoot;
+export default withRoot

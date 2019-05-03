@@ -25,7 +25,7 @@ const Login = ({ classes }) => {
     }
   }
   const onFailure = err => {
-    console.error(`Error occured on login- ${err}`)
+    console.error(`Error occured on login- ${{ err }}`)
     dispatch({ type: 'IS_LOGGED_IN', payload: false })
   }
 

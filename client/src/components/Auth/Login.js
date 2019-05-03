@@ -18,14 +18,15 @@ const Login = ({ classes }) => {
         headers: { authorization: idToken },
       })
       const { me } = await client.request(ME_QUERY)
-      dispatch({ type: 'LOGIN_USER', payload: { me } })
+      dispatch({ type: 'LOGIN_USER', payload: me })
       dispatch({ type: 'IS_LOGGED_IN', payload: googleUser.isSignedIn() })
     } catch (err) {
       onFailure(err)
     }
   }
   const onFailure = err => {
-    console.error(`Error occured on login- ${{ err }}`)
+    console.error(`Error occured on login- ${err}`)
+    console.log({ err })
     dispatch({ type: 'IS_LOGGED_IN', payload: false })
   }
 

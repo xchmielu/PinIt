@@ -11,8 +11,10 @@ import SaveIcon from '@material-ui/icons/SaveTwoTone'
 import Context from '../../context'
 import { CREATE_PIN_MUTATION } from '../../graphql/mutations'
 import { useClient } from '../../client'
+import { unstable_useMediaQuery as useMediaQuery } from '@material-ui/core/useMediaQuery'
 
 const CreatePin = ({ classes }) => {
+  const mobile = useMediaQuery('(max-width: 650px)')
   const client = useClient()
   const [title, setTtile] = useState('')
   const [image, setImage] = useState('')
@@ -27,9 +29,17 @@ const CreatePin = ({ classes }) => {
       setSubmitting(true)
       const url = await handleImageUpload()
       const { latitude, longitude } = state.draft
-      const variables = { title, image: url, content, latitude, longitude }
-      const { createPin } = await client.request(CREATE_PIN_MUTATION, variables)
-      dispatch({ type: 'CREATE_PIN', payload: createPin })
+      console.log(state.currentUser)
+      const variables = {
+        title,
+        image: url,
+        content,
+        latitude,
+        longitude,
+        author: state.currentUser._id,
+      }
+      await client.request(CREATE_PIN_MUTATION, variables)
+
       handleDeleteDraft()
     } catch (err) {
       setSubmitting(false)
@@ -98,7 +108,7 @@ const CreatePin = ({ classes }) => {
           name="content"
           label="Content"
           multiline
-          rows="6"
+          rows={mobile ? '3' : '6'}
           margin="normal"
           fullWidth
           variant="outlined"

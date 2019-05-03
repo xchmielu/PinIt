@@ -11,9 +11,16 @@ import Pin from './PinIcon'
 import Context from '../context'
 import Blog from '../components/Blog'
 import { Typography } from '@material-ui/core'
+import { Subscription } from 'react-apollo'
+import { unstable_useMediaQuery as useMediaQuery } from '@material-ui/core/useMediaQuery'
 
 import Button from '@material-ui/core/Button'
 import DeleteIcon from '@material-ui/icons/DeleteTwoTone'
+import {
+  PIN_ADDED_SUBSCRIPTION,
+  PIN_DELETED_SUBSCRIPTION,
+  PIN_UPDATED_SUBSCRIPTION,
+} from '../graphql/subscriptions'
 
 const INITIAL_VIEWPORT = {
   latitude: 52.219839344283194,
@@ -27,6 +34,17 @@ const Map = ({ classes }) => {
   const [viewport, setViewport] = useState(INITIAL_VIEWPORT)
   const [userPosition, setUserPosition] = useState(null)
   const [popup, setPopup] = useState(null)
+  //remove popup
+
+  useEffect(() => {
+    const pinExists =
+      popup && state.pins.findIndex(pin => pin._id === popup._id) > -1
+    if (!pinExists) {
+      setPopup(null)
+    }
+  }, [state.pins.length])
+
+  const mobile = useMediaQuery('(max-width: 650px)')
 
   useEffect(() => {
     getUserPostion()
@@ -75,15 +93,15 @@ const Map = ({ classes }) => {
 
   const handleDeletePin = async pin => {
     const variables = { pinId: pin._id }
-    const { deletePin } = await client.request(DELETE_PIN_MUTATION, variables)
-    dispatch({ type: 'DELETE_PIN', payload: deletePin })
+    await client.request(DELETE_PIN_MUTATION, variables)
     setPopup(null)
   }
   return (
-    <div className={classes.root}>
+    <div className={mobile ? classes.rootMobile : classes.root}>
       <ReactMapGL
         height="calc(100vh - 64px)"
         width="100vw"
+        scrollZoom={!mobile}
         mapStyle="mapbox://styles/mapbox/streets-v9"
         mapboxApiAccessToken="pk.eyJ1IjoibWNobWllbGV3c2tpIiwiYSI6ImNqdXB0YjFrcTAyMDEzeW55cHJodXdqYzkifQ.ZUm3zM12Hxjkr_eoIMnokg"
         onViewportChange={viewport => setViewport(viewport)}
@@ -164,6 +182,34 @@ const Map = ({ classes }) => {
           </Popup>
         )}
       </ReactMapGL>
+
+      {/* subciption area */}
+
+      <Subscription
+        subscription={PIN_ADDED_SUBSCRIPTION}
+        onSubscriptionData={({ subscriptionData }) => {
+          const { pinAdded } = subscriptionData.data
+          console.log({ pinAdded })
+          dispatch({ type: 'CREATE_PIN', payload: pinAdded })
+        }}
+      />
+      <Subscription
+        subscription={PIN_DELETED_SUBSCRIPTION}
+        onSubscriptionData={({ subscriptionData }) => {
+          const { pinDeleted } = subscriptionData.data
+          console.log({ pinDeleted })
+          dispatch({ type: 'DELETE_PIN', payload: pinDeleted })
+        }}
+      />
+      <Subscription
+        subscription={PIN_UPDATED_SUBSCRIPTION}
+        onSubscriptionData={({ subscriptionData }) => {
+          const { pinUpdated } = subscriptionData.data
+          console.log({ pinUpdated })
+          dispatch({ type: 'CREATE_COMMENT', payload: pinUpdated })
+        }}
+      />
+
       <Blog />
     </div>
   )
